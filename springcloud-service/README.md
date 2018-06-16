@@ -4,6 +4,7 @@
 
 * 配置文件
   - `server.port=8080`：设定服务端口，该端口不能与同一台机器上的服务中心端口冲突
+  - `eureka.instance.hostname=localhost`：指定主机或者说指定注册中心主机
   - `spring.application.name=hello-service`：设定当前服务名称
   - `eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:8888/eureka`： 指向服务中心地址
 
@@ -66,12 +67,12 @@ public interface DiscoveryClient {
 ```java
 
     /**
-	 * 服务发现客户端
-	 */
-	@Autowired
+     * 服务发现客户端
+     */
+    @Autowired
     private DiscoveryClient discoveryClient;
 
-	@GetMapping("/index")
+    @GetMapping("/index")
     public String index() {
     	ServiceInstance serviceInstance = serviceInstance();
     	LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
@@ -90,12 +91,35 @@ public interface DiscoveryClient {
 ```java
 
     /**
-	 * 服务注册
-	 */
-	@Autowired
-	private Registration registration;
+     * 服务注册
+     */
+     @Autowired
+     private Registration registration;
 
-	/**
+    /**
+     * 服务发现客户端
+     */
+     @Autowired
+     private DiscoveryClient discoveryClient;
+
+     @GetMapping("/index")
+     public String index() {
+       	 ServiceInstance serviceInstance = serviceInstance();
+       	 LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
+       	 return "provider service, host："+serviceInstance.getHost()+"，service_id："+serviceInstance.getServiceId();
+     }
+
+     private ServiceInstance serviceInstance() {
+         List<ServiceInstance> serviceInstanceList = discoveryClient.getInstances(registration.getServiceId());
+         return (serviceInstanceList != null && serviceInstanceList.size() > 0) ? serviceInstanceList.get(0) : null;
+     }
+```
+
+第三种：直接获取全部服务实例
+
+```java
+
+   /**
     * 服务发现客户端
     */
     @Autowired
@@ -103,46 +127,23 @@ public interface DiscoveryClient {
 
     @GetMapping("/index")
     public String index() {
-      	ServiceInstance serviceInstance = serviceInstance();
-       	LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
-       	return "provider service, host："+serviceInstance.getHost()+"，service_id："+serviceInstance.getServiceId();
-    }
-
-    private ServiceInstance serviceInstance() {
-        List<ServiceInstance> serviceInstanceList = discoveryClient.getInstances(registration.getServiceId());
-        return (serviceInstanceList != null && serviceInstanceList.size() > 0) ? serviceInstanceList.get(0) : null;
-    }
-```
-
-第三种：直接获取全部服务实例
-
-```java
-
-    /**
-	 * 服务发现客户端
-	 */
-	@Autowired
-	private DiscoveryClient discoveryClient;
-
-    @GetMapping("/index")
-	public String index() {
-		StringBuilder buf = new StringBuilder();
-		List<String> serviceIds = discoveryClient.getServices();
-		if(!CollectionUtils.isEmpty(serviceIds)){
-			for(String s : serviceIds){
-				System.out.println("serviceId:" + s);
-				List<ServiceInstance> serviceInstances =  discoveryClient.getInstances(s);
-				if(!CollectionUtils.isEmpty(serviceInstances)){
-					for(ServiceInstance si:serviceInstances){
-						buf.append("["+si.getServiceId() +" host=" +si.getHost()+" port="+si.getPort()+" uri="+si.getUri()+"]");
-					}
-				}else{
-					buf.append("no service.");
+	StringBuilder buf = new StringBuilder();
+	List<String> serviceIds = discoveryClient.getServices();
+	if(!CollectionUtils.isEmpty(serviceIds)){
+		for(String s : serviceIds){
+			System.out.println("serviceId:" + s);
+			List<ServiceInstance> serviceInstances =  discoveryClient.getInstances(s);
+			if(!CollectionUtils.isEmpty(serviceInstances)){
+				for(ServiceInstance si:serviceInstances){
+					buf.append("["+si.getServiceId() +" host=" +si.getHost()+" port="+si.getPort()+" uri="+si.getUri()+"]");
 				}
+			}else{
+				buf.append("no service.");
 			}
 		}
-		return buf.toString();
 	}
+	return buf.toString();
+    }
 ```
 
 ----
