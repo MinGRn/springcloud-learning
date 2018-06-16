@@ -152,6 +152,10 @@ public interface DiscoveryClient {
 
 ![服务注册成功](images/服务注册成功.png)
 
+现在访问服务 `hello-service` `127.0.0.1:8080/index` 就会在页面显示如下信息：
+
+`provider service, host：localhost，service_id：HELLO-SERVICE`
+
 ----
 
 参考：
