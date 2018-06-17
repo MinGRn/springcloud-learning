@@ -1,4 +1,4 @@
-# spring-cloud-eureka 服务注册中心
+# spring-cloud-eureka 单节点服务注册中心
 
 springcloud 工程创建与 springboot 工程创建一样，只不过在这个地方只需要勾选 `Cloud Discovery` 下的 `Eureka Serve` 即可。
 如图：
@@ -17,6 +17,10 @@ springcloud 工程创建与 springboot 工程创建一样，只不过在这个�
   + `eureka.client.register-with-eureka=false`：是否需要注册到注册中心，由于该应用为注册中心,所以设置为false,代表不向注册中心注册自己
   + `eureka.client.fetch-registry=false`：由于注册中心的职责就是维护服务实例,它并不需要去检索服务,所以也设置为false
   + `eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:${server.port}/eureka`：注册服务器的地址：服务提供者和服务消费者都要依赖这个地址
+
+----
+
+接着来看下单节点服务提供者 [springcloud-eureka-service](../springcloud-eureka-service)
 
 
 # 参考

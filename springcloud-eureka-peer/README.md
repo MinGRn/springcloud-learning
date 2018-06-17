@@ -74,3 +74,7 @@ java -jar springcloud-eureka-peer-0.0.1-SNAPSHOT.jar --spring.profiles.active=pe
 * **peer2**
 
 ![peer2](images/peer2.png)
+
+----
+
+接着来看下高可用服务提供者 [springcloud-eureka-peer-service](../springcloud-eureka-peer-service)
