@@ -1,6 +1,6 @@
 # springcloud-eureka-peer 高可用注册中心
 
-在之前的注册中心实例（springcloud-eureka）中使用的是单节点配置，因为我们在服务注册中心增加了下面这两个参数，让服务中心不注册自己：
+在之前的注册中心实例（[springcloud-eureka](../springcloud-eureka)）中使用的是单节点配置，因为我们在服务注册中心增加了下面这两个参数，让服务中心不注册自己：
 
 ```profile
 eureka.client.register-with-eureka=false

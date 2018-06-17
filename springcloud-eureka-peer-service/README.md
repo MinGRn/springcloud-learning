@@ -1,6 +1,6 @@
 # springcloud-eureka-peer-service 高可用服务提供者
 
-在高可用注册中心（springcloud-eureka-peer）中，两个注册中心已经成功互相注册。
+在高可用注册中心（[springcloud-eureka-peer](../springcloud-eureka-peer)）中，两个注册中心已经成功互相注册。
 现在怎么将服务同时注册到这两个服务中心呢？
 
 将单节点服务注册提供者（springcloud-eureka-service）模块拷贝一份。
