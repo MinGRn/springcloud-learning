@@ -21,7 +21,7 @@ eureka.instance.hostname=localhost
 eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:${server.port}/eureka
 ```
 
-前面说了，高可用实际上就是将自己作为服务向其他服务中心注册自己。因此，需要将下面的两句配置去掉。
+前面说了，高可用实际上就是将自己作为服务向其他服务中心注册自己。因此，需要将下面的两句配置去掉或者都改为true。
 
 ```profile
 eureka.client.register-with-eureka=false
