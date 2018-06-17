@@ -16,7 +16,11 @@
 	</properties>
 
 	<modules>
+		<!--单节点服务注册中心-->
 		<module>springcloud-eureka</module>
 		<module>springcloud-eureka-service</module>
+
+		<!--高可用服务注册中心(多节点)-->
+		<module>springcloud-eureka-peer</module>
 	</modules>
 </project>
