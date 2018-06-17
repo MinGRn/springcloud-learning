@@ -152,6 +152,24 @@ public interface DiscoveryClient {
 
 ![服务注册成功](images/服务注册成功.png)
 
+也可以直接看服务注册中心控制台，控制台输出如下日志信息即表示服务注册成功
+
+```
+2018-06-17 12:57:14.916  INFO 5736 --- [nio-8888-exec-9] c.n.e.registry.AbstractInstanceRegistry  : Registered instance HELLO-SERVICE/10.0.9.209:hello-service:8080 with status UP (replication=false)
+```
+
+或者在服务提供者控制台中看到如下日志信息
+
+```vim
+2018-06-17 12:57:14.688  INFO 13104 --- [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application hello-service with eureka with status UP
+2018-06-17 12:57:14.688  INFO 13104 --- [           main] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1529211434688, current=UP, previous=STARTING]
+2018-06-17 12:57:14.690  INFO 13104 --- [nfoReplicator-0] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_HELLO-SERVICE/10.0.9.209:hello-service:8080: registering service...
+2018-06-17 12:57:14.764  INFO 13104 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2018-06-17 12:57:14.765  INFO 13104 --- [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8080
+2018-06-17 12:57:14.768  INFO 13104 --- [           main] c.m.s.s.SpringcloudServiceApplication    : Started SpringcloudServiceApplication in 7.92 seconds (JVM running for 8.594)
+2018-06-17 12:57:14.918  INFO 13104 --- [nfoReplicator-0] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_HELLO-SERVICE/10.0.9.209:hello-service:8080 - registration status: 204
+```
+
 现在访问服务 `hello-service` `127.0.0.1:8080/index` 就会在页面显示如下信息：
 
 `provider service, host：localhost，service_id：HELLO-SERVICE`
