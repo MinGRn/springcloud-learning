@@ -17,6 +17,6 @@
 
 	<modules>
 		<module>springcloud-eureka</module>
-		<module>springcloud-service</module>
+		<module>springcloud-eureka-service</module>
 	</modules>
 </project>
