@@ -1,4 +1,4 @@
-package com.mingrn.service.service;
+package com.mingrn.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

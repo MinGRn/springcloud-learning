@@ -1,4 +1,4 @@
-package com.mingrn.service.service.web;
+package com.mingrn.service.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
