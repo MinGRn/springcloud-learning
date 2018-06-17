@@ -22,5 +22,6 @@
 
 		<!--高可用服务注册中心(多节点)-->
 		<module>springcloud-eureka-peer</module>
+		<module>springcloud-eureka-peer-service</module>
 	</modules>
 </project>
