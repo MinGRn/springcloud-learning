@@ -23,5 +23,8 @@
 		<!--高可用服务注册中心(多节点)-->
 		<module>springcloud-eureka-peer</module>
 		<module>springcloud-eureka-peer-service</module>
+
+		<!--服务发现与消费者-->
+		<module>springcloud-ribbon-consumer</module>
 	</modules>
 </project>
