@@ -16,6 +16,8 @@
 
 > **说明：** Ribbon 是一个基于 HTTP 和 TCP 的客户端负载均衡器。
 
+----
+
 * 在构建服务发现与消费示例之前首先需要做些准备工作。启动之前构建的 [单节点服务注册中心](../springcloud-eureka) 以及 [单节点服务提供者](../springcloud-eureka-service)。为了试验 Ribbon 的客户端负载均衡功能，我们通过 `java -jar` 命令方式来启动两个不同端口的 hello-service。
 
 `java -jar springcloud-eureka-service-0.0.1-SNAPSHOT.jar --server.port=8080`
@@ -120,7 +122,7 @@ eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:8888/eu
 
 ![spring-cloud-consumer-info](images/spring-cloud-consumer-info.png)
 
-* 通过访问 `http://localhost:9999/ribbon-consumer` 成功返回 `provider service, host：localhost，service_id：HELLO-SERVICE`。此时会在应用控制台中看到如下信息，Ribbon 输出了当前客户端维护的 hello-service 服务列表情况。其中包含了各个实例的位置，Ribbon 就是按照此信息进行轮训访问以实现基于客户端的辅助均衡。另外还输出了一些其他有用的信息，如对各个实例的请求中暑量、第一次连接信息、上一次连接信息、总的请求失败数量等。
+* 通过访问 `http://localhost:9999/ribbon-consumer` 成功返回 `provider service, host：localhost，service_id：HELLO-SERVICE`。此时会在应用控制台中看到如下信息，Ribbon 输出了当前客户端维护的 hello-service 服务列表情况。其中包含了各个实例的位置，Ribbon 就是按照此信息进行轮训访问以实现基于客户端的辅助均衡。另外还输出了一些其他有用的信息，如对各个实例的请求总数量、第一次连接信息、上一次连接信息、总的请求失败数量等。
 
 ```
 c.n.l.DynamicServerListLoadBalancer      : DynamicServerListLoadBalancer for client hello-service initialized: DynamicServerListLoadBalancer:{NFLoadBalancer:name=hello-service,current list of Servers=[localhost:8080, localhost:8081],Load balancer stats=Zone stats: {defaultzone=[Zone:defaultzone;	Instance count:2;	Active connections count: 0;	Circuit breaker tripped count: 0;	Active connections per server: 0.0;]
