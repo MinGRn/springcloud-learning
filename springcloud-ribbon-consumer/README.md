@@ -19,51 +19,52 @@
 * 在构建服务发现与消费示例之前首先需要做些准备工作。启动之前构建的 [单节点服务注册中心](../springcloud-eureka) 以及 [单节点服务提供者](../springcloud-eureka-service)。为了试验 Ribbon 的客户端负载均衡功能，我们通过 `java -jar` 命令方式来启动两个不同端口的 hello-service。
 
 `java -jar springcloud-eureka-service-0.0.1-SNAPSHOT.jar --server.port=8080`
+
 `java -jar springcloud-eureka-service-0.0.1-SNAPSHOT.jar --server.port=8081`
 
-* 在成功启动两个 hello-service 服务之后，再服务中心信息面板中可以看到名为 hello-service 的服务出现了两个实例单元，端口分别是 8080 和 8081
+* 在成功启动两个 hello-service 服务之后，在服务中心信息面板中可以看到名为 hello-service 的服务出现了两个实例单元，端口分别是 8080 和 8081
 
 ![eureka-service-center](images/eureka-service-center.png)
 
 * 创建一个 Spring-Boot 的基础工程来是实现服务发现与消费者。需要勾选 `Eureka Server` 和 `Ribbon`
 
 ![spring-cloud-model-eureka](images/spring-cloud-model-eureka.png)
+
 ![spring-cloud-model-ribbon](images/spring-cloud-model-ribbon.png)
 
 构建完成后会看到依赖如下：
 
 ```xml
 <dependencies>
-    <dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework.cloud</groupId>
-		<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework.cloud</groupId>
-		<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
-	</dependency>
-
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-test</artifactId>
-		<scope>test</scope>
-	</dependency>
+  <dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+  </dependency>
+  <dependency>
+  	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+  </dependency>
+  <dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+  </dependency>
+  <dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-test</artifactId>
+	<scope>test</scope>
+  </dependency>
 </dependencies>
 
 <dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-dependencies</artifactId>
-			<version>${spring-cloud.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-	</dependencies>
+  <dependencies>
+	<dependency>
+	  <groupId>org.springframework.cloud</groupId>
+	  <artifactId>spring-cloud-dependencies</artifactId>
+	  <version>${spring-cloud.version}</version>
+	  <type>pom</type>
+	  <scope>import</scope>
+	</dependency>
+  </dependencies>
 </dependencyManagement>
 ```
 
