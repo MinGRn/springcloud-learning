@@ -26,5 +26,8 @@
 
 		<!--服务发现与消费者-->
 		<module>springcloud-ribbon-consumer</module>
+
+		<!--容错保护-->
+		<module>springcloud-ribbon-hystrix-consumer</module>
 	</modules>
 </project>

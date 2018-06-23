@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping
@@ -30,7 +31,23 @@ public class HelloWorldController {
 	public String index() {
 		ServiceInstance serviceInstance = serviceInstance();
 		LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
-		return "provider service, host："+serviceInstance.getHost()+"，service_id："+serviceInstance.getServiceId();
+		return "provider service, host：" + serviceInstance.getHost() + "，service_id：" + serviceInstance.getServiceId();
+	}
+
+	/**
+	 * 模拟服务阻塞
+	 */
+	@GetMapping("/serviceBlock")
+	public String serviceBlock() throws InterruptedException {
+		ServiceInstance serviceInstance = serviceInstance();
+
+		//让线程等待几秒
+		int sleepTime = new Random().nextInt(3000);
+		LOGGER.info(">>> sleepTime: " + sleepTime);
+		Thread.sleep(sleepTime);
+
+		LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
+		return "provider service, host：" + serviceInstance.getHost() + "，service_id：" + serviceInstance.getServiceId();
 	}
 
 
