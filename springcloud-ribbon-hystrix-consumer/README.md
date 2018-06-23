@@ -101,7 +101,7 @@ public class ConsumerController {
 
 另外，我们还可以模拟一下服务阻塞（长时间未响应）的情况。
 
-我们在 [服务提供者的HelloWorldController](../springcloud-eureka-service/src/main/java/com/mingrn/service/web/HelloWorldController) 进行改造。新增一个方法 `serviceBlock`
+我们在 [服务提供者的HelloWorldController](../springcloud-eureka-service/src/main/java/com/mingrn/service/web) 进行改造。新增一个方法 `serviceBlock`
 
 ```java
 
