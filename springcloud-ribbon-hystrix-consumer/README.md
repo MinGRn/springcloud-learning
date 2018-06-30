@@ -15,8 +15,8 @@
 
 ```xml
 <dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+    <groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
 </dependency>
 ```
 
@@ -106,17 +106,17 @@ public class ConsumerController {
 ```java
 
   @GetMapping("/serviceBlock")
-	public String serviceBlock() throws InterruptedException {
-		ServiceInstance serviceInstance = serviceInstance();
+  public String serviceBlock() throws InterruptedException {
+      ServiceInstance serviceInstance = serviceInstance();
 
-		//让线程等待几秒
-		int sleepTime = new Random().nextInt(3000);
-		LOGGER.info(">>> sleepTime: " + sleepTime);
-		Thread.sleep(sleepTime);
+	  //让线程等待几秒
+	  int sleepTime = new Random().nextInt(3000);
+	  LOGGER.info(">>> sleepTime: " + sleepTime);
+	  Thread.sleep(sleepTime);
 
-		LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
-		return "provider service, host：" + serviceInstance.getHost() + "，service_id：" + serviceInstance.getServiceId();
-	}
+	  LOGGER.info("provider service, host：{}，service_id：{}", serviceInstance.getHost(), serviceInstance.getServiceId());
+	  return "provider service, host：" + serviceInstance.getHost() + "，service_id：" + serviceInstance.getServiceId();
+  }
 
 ```
 
@@ -140,7 +140,7 @@ public class ConsumerController {
 
 ```java
 
-@GetMapping("serviceBlock")
+    @GetMapping("serviceBlock")
 	public String serviceBlock() {
 		return helloService.serviceBlock();
 	}
