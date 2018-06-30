@@ -8,8 +8,8 @@
 
 ```xml
 <dependency>
-		<groupId>org.springframework.cloud</groupId>
-		<artifactId>spring-cloud-starter-netflix-turbine</artifactId>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
 </dependency>
 ```
 
@@ -17,8 +17,8 @@
 
 ```xml
 <dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-actuator</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
 </dependency>
 ```
 
