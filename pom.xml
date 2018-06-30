@@ -29,5 +29,11 @@
 
 		<!--容错保护-->
 		<module>springcloud-ribbon-hystrix-consumer</module>
+
+		<!--仪表盘-->
+		<module>springcloud-hystrix-dashboard</module>
+
+		<!---->
+		<module>springcloud-turbine</module>
 	</modules>
 </project>
