@@ -30,10 +30,10 @@
 		<!--容错保护-->
 		<module>springcloud-ribbon-hystrix-consumer</module>
 
-		<!--仪表盘-->
+		<!--Hystrix Dashboard仪表盘-->
 		<module>springcloud-hystrix-dashboard</module>
 
-		<!---->
+		<!--Turbine集群监控-->
 		<module>springcloud-turbine</module>
 	</modules>
 </project>
