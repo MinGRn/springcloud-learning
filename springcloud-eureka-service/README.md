@@ -13,7 +13,7 @@
 
 ----
 
-在 `HelloWorldController` 中进行测试时注入 DiscoveryClient
+在 `IndexController` 中进行测试时注入 DiscoveryClient（`HelloWorldController` 是[springcloud-feign-consumer](../springcloud-feign-consumer) 模块测试使用）
 
 ```java
 @Autowired
