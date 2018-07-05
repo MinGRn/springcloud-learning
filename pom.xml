@@ -35,5 +35,8 @@
 
 		<!--Turbine集群监控-->
 		<module>springcloud-turbine</module>
+
+		<!---->
+		<module>springcloud-feign-consumer</module>
 	</modules>
 </project>
