@@ -16,7 +16,7 @@ import java.util.Random;
 @RequestMapping
 public class HelloWorldController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HandlerExceptionResolver.class);
+
 
 	@GetMapping("/hello1")
 	public String hello1(@RequestParam String name) {
