@@ -333,3 +333,106 @@ public String serviceBlock() {
 ![sleep-time](images/sleep-time.png)
 
 从这个信息可以看出，由于超时时候为 2000 毫秒，当等待时间超过这个时间时就会发起重试，第二次请求时间小于 2000 毫秒。虽然经历了一次失败，但是通过重试机制最终还是获得请求的结果！
+
+----
+
+**Hystrix 配置**
+
+之前介绍了 Ribbon 的配置，需要注意的一天就是 Ribbon 的超时与 Hystrix 的超时是两个概念。我们需要让 Hystrix 的超时时间大于 Ribbon 的超时时间，否则 Hystrix 超时后该命令直接熔断，Ribbon 的重试机制就没有了意义！
+
+在 Feign 中除了引用了用于客户端的负载均衡 Ribbon 外 还引用了服务保护与熔断的工具 Hystrix。默认情况下， Feign 会将所有 Feign 客户端的方法否封装到 Hystrix 命令中进行服务保护。这里就说下在 Feign 中 Hystrix 如何配置服务降级。
+
+对于 Hystrix 的全局配置同 Spring Cloud Ribbon 的全局配置一样，直接采用它的默认配置前缀 `hystrix.command.default` 就可以进行设置，比如设置全局超时时间：
+
+```
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=5000
+```
+
+另外，在对 Hystrix 进行配置之前，我们需要确认 `feign.hystrix.enable` 参数没有被设置为 false，否则该参数设置会关闭 Feign 客户端的 Hystrix 支持。而对于我们之前测试重试机制时，对于 Hystrix 的超时时间控制除了可以使用上面的配置来增加熔断超时时间，也可以通过 `feign.hystrix.enable=false` 来关闭 Hystrix 功能，或者使用 `hystrixw.command.default.execution.timeout.enable = false` 来关闭熔断功能。
+
+另外，如果不想关闭 Hystrix 的全局支持，而只想针对某个服务客户端关闭 Hystrix 支持时，需要通过使用 `@Scope("prototype")` 注解为指定的客户端配置 `Feign.builder` 实例，如下所示：
+
+```java
+@Configuration
+public class DisableHystrixConfiguration {
+
+	@Bean
+	@Scope("prototype")
+	public Feign.Builder feignBuilder() {
+		return new Feign.Builder();
+	}
+}
+
+@FeignClient(value = "hello-service", configuration = DisableHystrixConfiguration.class)
+public interface HelloService {
+
+	@GetMapping("/serviceBlock")
+	String serviceBlock();
+
+	@GetMapping("/index")
+	String index();
+
+	@GetMapping("/hello1")
+	String hello1(@RequestParam("name") String name);
+
+	@GetMapping("/hello2")
+	User hello2(@RequestHeader("name") String name, @RequestHeader("age") Integer age);
+
+	@PostMapping("/hello3")
+	String hello3(@RequestBody User user);
+}
+```
+
+通过声明一个配置类，在HelloService 接口中通过 configuration  配置属性中引入即可。
+
+关于服务降级配置，声明一个类 `HelloServiceFallback` 实现 `HelloService` 接口，重写方法，在重写的方法中处理。需要在实现类中增加 `@Component` 注解。再在 HelloService 类中通过 fallback 调用即可，如下：
+
+```java
+@Component
+public class HelloServiceFallback implements HelloService {
+	@Override
+	public String serviceBlock() {
+		return "error";
+	}
+
+	@Override
+	public String index() {
+		return "error";
+	}
+
+	@Override
+	public String hello1(String name) {
+		return "error";
+	}
+
+	@Override
+	public User hello2(String name, Integer age) {
+		return new User("未知", 0);
+	}
+
+	@Override
+	public String hello3(User user) {
+		return "error";
+	}
+}
+
+
+@FeignClient(value = "hello-service", fallback = HelloServiceFallback.class,configuration = DisableHystrixConfiguration.class)
+public interface HelloService {
+
+	@GetMapping("/serviceBlock")
+	String serviceBlock();
+
+	@GetMapping("/index")
+	String index();
+
+	@GetMapping("/hello1")
+	String hello1(@RequestParam("name") String name);
+
+	@GetMapping("/hello2")
+	User hello2(@RequestHeader("name") String name, @RequestHeader("age") Integer age);
+
+	@PostMapping("/hello3")
+	String hello3(@RequestBody User user);
+}
+```

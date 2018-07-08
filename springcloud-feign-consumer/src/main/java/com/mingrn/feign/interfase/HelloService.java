@@ -1,10 +1,12 @@
 package com.mingrn.feign.interfase;
 
+import com.mingrn.feign.config.DisableHystrixConfiguration;
 import com.mingrn.feign.model.User;
+import com.mingrn.feign.service.HelloServiceFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient("hello-service")
+@FeignClient(value = "hello-service", fallback = HelloServiceFallback.class,configuration = DisableHystrixConfiguration.class)
 public interface HelloService {
 
 	@GetMapping("/serviceBlock")
