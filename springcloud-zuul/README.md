@@ -88,7 +88,7 @@ zuul.routes.api-b.serviceId=feign-consumer
 ```
 
 - `zuul.routes.api-a.path`：路由规则，所有请求路径中包含 `/api-a/` 都访问 `zuul.routes.api-a.serviceId` 指定的服务。
-- `zuul.routes.api-a.serviceId`：指定服务。
+- `zuul.routes.api-a.serviceId`：指定服务，每个服务都会有一个名称即在配置文件中通过 `spring.application.name` 指定的服务名称。
 
 其中 `api-a` 与 `api-b` 都是自己定义的，比如如果要请求的服务是 hello-service 为了可读性可以写成：
 
