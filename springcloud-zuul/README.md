@@ -2,11 +2,11 @@
 
 在之前的模块实例中我们对 Spring Cloud Netflix 下的核心组件已经了解一大半。这些组件基本涵盖了微服务建构中最基本的几个核心设施，利用这些组件我们已经可以构建起一个简单的微服务架构系统。
 
-如：通过使用 Spring Cloud Eureka 实现高可用的服务注册中心以及实现微服务的注册于发现；通过 Spring Cloud Ribbon 或 Feign 实现服务间负载均衡的接口调用；对于已开的服务调用使用 Spring Cloud Hystrix 来进行包装，实现线程隔离并加入熔断机制，以避免在服务架构中因个别服务出现异常而引起级联故障蔓延。通过上诉思路，可以设计出类似下图的基础系统机构。
+如：通过使用 Spring Cloud Eureka 实现高可用的服务注册中心以及实现微服务的注册于发现；通过 Spring Cloud Ribbon 或 Feign 实现服务间负载均衡的接口调用；对于依赖的服务调用使用 Spring Cloud Hystrix 来进行包装，实现线程隔离并加入熔断机制，以避免在服务架构中因个别服务出现异常而引起级联故障蔓延。通过上诉思路，可以设计出类似下图的基础系统机构。
 
 ![base-system](images/base-system.png)
 
-在该架构中，我们的服务集群包含内部服务 Service A Service B，他们都会想 Eureka Service 集群进行注册于订阅服务，而 Open Service 是一个对外的 RESTFul Api 服务，它通过 F5、Nginx 等网络设备或工具团建实现对各个微服务的路由与负载均衡，并公开给外部的客户端调用。
+在该架构中，我们的服务集群包含内部服务 Service A 和 Service B，他们都会向 Eureka Service 集群进行注册与订阅服务，而 Open Service 是一个对外的 RESTFul Api 服务，它通过 F5、Nginx 等网络设备或工具软件实现对各个微服务的路由与负载均衡，并公开给外部的客户端调用。
 
 首先可以肯定的是，这个架构是没有问题的。但是我们可以通过开发与运维的角度思考是否还有些不足。
 
@@ -16,7 +16,7 @@
 
 **开发：**
 
-现在，我们在来看下开发人员的角度。在大多数情况下，为了保证对外服务的安全性，我们在服务端的微服务接口中旺旺都会增加权限校验机制，比如校验登录状态等；同时为了防止客户端在发起请求时被串改等安全方面的考虑，还会有一些签名教研的机制存在。在这个时候，由于使用微服务架构的理念，我们不得不在各个微服务中增加这样的一套逻辑。随着规模不断扩大，这些校验逻辑变得越来越冗余，突然有一天，我们发现这样的逻辑存在问题或BUG在修复时有需要在每一个我服务应用中做修改，又会引起开发人员的抱怨与测试人员的负担。
+现在，我们在来看下开发人员的角度。在大多数情况下，为了保证对外服务的安全性，我们在服务端的微服务接口中往往都会增加权限校验机制，比如校验登录状态等；同时为了防止客户端在发起请求时被串改等安全方面的考虑，还会有一些签名校验的机制存在。在这个时候，由于使用微服务架构的理念，我们不得不在各个微服务中增加这样的一套逻辑。随着规模不断扩大，这些校验逻辑变得越来越冗余，突然有一天，我们发现这样的逻辑存在问题或BUG在修复时有需要在每一个我服务应用中做修改，又会引起开发人员的抱怨与测试人员的负担。
 
 为了解决这样的问题 **API 网关** 的概念应运而生。既然 API 网关这么重要那再微服务中是否也有这样的解决方案呢 一一 Spring Cloud Zuul。
 
@@ -46,7 +46,7 @@ public class SpringcloudZuulApplication {
 }
 ```
 
-> **注意：**这里使用的是 `@SpringCloudApplication` 注解，如果使用的是 `@SpringBootApplication` 注解还需要加上 `@EnableDiscoveryClient` 注解。另外一点这里并不是直接采用
+> **注意：** 这里使用的是 `@SpringCloudApplication` 注解，如果使用的是 `@SpringBootApplication` 注解还需要加上 `@EnableDiscoveryClient` 注解。另外一点这里并不是直接采用
 >```
 public static void main(String[] args) {
 	SpringApplication.run(SpringcloudZuulApplication.class, args);
@@ -99,9 +99,9 @@ zuul.routes.hello-service.serviceId=hello-service
 
 但是，每一对路由 path 与 serviceId 一定要对应。
 
-启动服务注册中心（[springcloud-eureka](.images/springcloud-eureka)）、服务提供者（[springcloud-eureka-service](.images/springcloud-eureka-service)） 与 服务消费者（[springcloud-feign-consumer](.images/springcloud-feign-consumer) 和该应用。
+启动服务注册中心（[springcloud-eureka](../springcloud-eureka)）、服务提供者（[springcloud-eureka-service](../springcloud-eureka-service)） 与 服务消费者（[springcloud-feign-consumer](../springcloud-feign-consumer) 和该应用。
 
->**注意：**这里的服务提供者与服务消费者不要搞混，因为都是注册到服务注册中心所以这两个应用是否服务提供者与服务消费者，因为 springcloud-feign-consumer 功能调用的 springcloud-eureka-service ，所以对于 springcloud-eureka-service 来说 springcloud-feign-consumer 就是它的消费者。
+>**注意：** 这里的服务提供者与服务消费者不要搞混，因为都是注册到服务注册中心所以这两个应用是否服务提供者与服务消费者，因为 springcloud-feign-consumer 功能调用的 springcloud-eureka-service ，所以对于 springcloud-eureka-service 来说 springcloud-feign-consumer 就是它的消费者。
 
 如下界面：
 
@@ -186,7 +186,7 @@ public class AccessFilter extends ZuulFilter {
 
 当我们在请求中增加 `token` 参数信息：`127.0.0.1:5555/api-b/feign-consumer2?token=1` 就能正常请求！
 
->**注意：**在实际中不可能直接采用这种不安全的方式，这里只是测试使用。
+>**注意：** 在实际中不可能直接采用这种不安全的方式，这里只是测试使用。
 
 关于 `shouldFilter()` 函数，我们可以直接看下 [官网Zuul](https://cloud.spring.io/spring-cloud-netflix/multi/multi__router_and_filter_zuul.html) 的一个 PRE 栗子：
 
