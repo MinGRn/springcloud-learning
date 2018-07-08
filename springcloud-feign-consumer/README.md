@@ -93,8 +93,6 @@ provider service, host：localhost，service_id：HELLO-SERVICE
 @RequestMapping
 public class HelloWorldController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HandlerExceptionResolver.class);
-
 	@GetMapping("/hello1")
 	public String hello1(@RequestParam String name) {
 		return "Hello" + name;
@@ -134,7 +132,7 @@ public class User {
 		this.age = age;
 	}
 
-    //get set
+      //get set...
 
 	@Override
 	public String toString() {
