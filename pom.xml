@@ -27,7 +27,7 @@
 		<!--服务发现与消费者-->
 		<module>springcloud-ribbon-consumer</module>
 
-		<!--容错保护-->
+		<!--Hystrix 容错保护-->
 		<module>springcloud-ribbon-hystrix-consumer</module>
 
 		<!--Hystrix Dashboard仪表盘-->
@@ -36,7 +36,7 @@
 		<!--Turbine集群监控-->
 		<module>springcloud-turbine</module>
 
-		<!--Feign-->
+		<!--Feign 负载均衡与容错保护-->
 		<module>springcloud-feign-consumer</module>
 
 		<!--Zuul网关-->
