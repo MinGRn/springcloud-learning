@@ -36,7 +36,10 @@
 		<!--Turbine集群监控-->
 		<module>springcloud-turbine</module>
 
-		<!---->
+		<!--Feign-->
 		<module>springcloud-feign-consumer</module>
+
+		<!--Zuul网关-->
+		<module>springcloud-zuul</module>
 	</modules>
 </project>
