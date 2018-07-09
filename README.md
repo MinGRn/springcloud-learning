@@ -4,7 +4,7 @@
 
 本仓库主要参考至 [SpringCloud中文官网](https://springcloud.cc/)、[Spring Cloud 官网](http://projects.spring.io/spring-cloud/) 与 [翟永超](http://blog.didispace.com/) 的 《Spring Cloud 微服务实战》 书籍。
 
-本参考在提交后在 GitHub 中的目录会有些错乱，下面将阅读顺序进行一个罗列：
+本仓库在提交后在 GitHub 中的目录会有些错乱，下面将阅读顺序进行一个罗列：
 
 + 单节点服务注册中心
   - springcloud-eureka
