@@ -101,7 +101,7 @@ zuul.routes.hello-service.serviceId=hello-service
 
 启动服务注册中心（[springcloud-eureka](../springcloud-eureka)）、服务提供者（[springcloud-eureka-service](../springcloud-eureka-service)） 与 服务消费者（[springcloud-feign-consumer](../springcloud-feign-consumer) 和该应用。
 
->**注意：** 这里的服务提供者与服务消费者不要搞混，因为都是注册到服务注册中心所以这两个应用是否服务提供者与服务消费者，因为 springcloud-feign-consumer 功能调用的 springcloud-eureka-service ，所以对于 springcloud-eureka-service 来说 springcloud-feign-consumer 就是它的消费者。
+>**注意：** 这里的服务提供者与服务消费者不要搞混，因为都是注册到服务注册中心所以这两个应用都是服务提供者与服务消费者，因为 springcloud-feign-consumer 功能调用的 springcloud-eureka-service ，所以对于 springcloud-eureka-service 来说 springcloud-feign-consumer 就是它的消费者。
 
 如下界面：
 
