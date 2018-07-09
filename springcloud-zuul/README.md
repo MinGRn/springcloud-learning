@@ -47,11 +47,11 @@ public class SpringcloudZuulApplication {
 ```
 
 > **注意：** 这里使用的是 `@SpringCloudApplication` 注解，如果使用的是 `@SpringBootApplication` 注解还需要加上 `@EnableDiscoveryClient` 注解。另外一点这里并不是直接采用
->```
+```
 public static void main(String[] args) {
 	SpringApplication.run(SpringcloudZuulApplication.class, args);
 }
->```
+```
 >因为使用 `SpringApplicationBuilder`，可以在应用程序启动之前更改其中一些应用程序默认设置，即使这些设置中的大多数都具有合理的默认值。因此，只需几行代码，您就可以为不同目的（嵌入式部署，外部部署，测试等）构建具有不同设置的不同应用程序，同时您的实际底层业务逻辑保持不变。
 
 在配置文件中配置 Zuul 应用的基础信息，如应用名、服务端口等信息：
