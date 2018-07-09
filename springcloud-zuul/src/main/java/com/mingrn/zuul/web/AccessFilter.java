@@ -19,10 +19,10 @@ public class AccessFilter extends ZuulFilter {
 
 	/**
 	 * 过滤器类型
-	 * "pre": 请求被路由之前执行
-	 * "route": 转发请求被路由
-	 * "post": 请求被路由之后执行
-	 * "error": 请求在路由发生错误时执行
+	 * "pre": 请求被路由之前调用
+	 * "route": 请求被路由时调用
+	 * "post": 在 "route" 和 "error" 之后调用
+	 * "error": 处理请求时发生错误是调用
 	 * </p>
 	 * 官网地址:https://cloud.spring.io/spring-cloud-netflix/multi/multi__router_and_filter_zuul.html
 	 */
@@ -32,7 +32,7 @@ public class AccessFilter extends ZuulFilter {
 	}
 
 	/**
-	 * 过滤器执行顺序
+	 * 过滤器执行顺序,值越小优先级越高
 	 */
 	@Override
 	public int filterOrder() {
@@ -40,7 +40,7 @@ public class AccessFilter extends ZuulFilter {
 	}
 
 	/**
-	 * 该过滤器是否被执行
+	 * 该过滤器是否被执行,可以通过此方法来指定过滤器的有效范围
 	 */
 	@Override
 	public boolean shouldFilter() {

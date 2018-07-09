@@ -170,12 +170,12 @@ public class AccessFilter extends ZuulFilter {
 ```
 
 + `filterType`：过滤器的类型，决定过滤器在请求的哪个周期中执行。
-	- `pre`：请求被路由之前执行
-	- `route`：转发请求被路由
-	- `post`：请求被路由之后执行
-	- `error`：请求在路由发生错误时执行
-+ `filterOrder`：过滤器执行顺序
-+ `shouldFilter`：该过滤器是否被执行
+	- `pre`：请求被路由之前调用
+	- `route`：请求被路由时调用
+	- `post`：在 "route" 和 "error" 之后调用
+	- `error`：处理请求时发生错误是调用
++ `filterOrder`：过滤器执行顺序,值越小优先级越高
++ `shouldFilter`：该过滤器是否被执行,可以通过此方法来指定过滤器的有效范围
 + `run`：具体的业务逻辑
 
 这里我们在 `run()` 函数中增加了 request 请求中需要包含 `token` 参数信息。如果不包含则不对其进行路由并返回错误码 401。
