@@ -123,7 +123,7 @@ provider service, host：localhost，service_id：HELLO-SERVICE HelloMinGRn name
 
 说明路由同样成功。
 
-这样就是 API 网关的里面，**通过访问一个主机通过不同的路由规则而做到访问不同的主机。**
+这就做到了**通过访问一个主机通过不同的路由规则而做到访问不同的主机。**
 
 现在，解决了运维人员的问题。
 
