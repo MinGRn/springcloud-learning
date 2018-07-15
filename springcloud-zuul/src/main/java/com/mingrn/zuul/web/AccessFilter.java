@@ -5,6 +5,7 @@ import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author MinGRn <br > 2018/7/8 17:26
  */
+//@Component
 public class AccessFilter extends ZuulFilter {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(AccessFilter.class);

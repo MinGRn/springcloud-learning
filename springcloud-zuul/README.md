@@ -22,7 +22,7 @@
 
 ----
 
-**构建网关**
+## 构建网关
 
 构建一个Spring Boot 应用，引入 `spring-cloud-starter-netflix-zuul` 包。
 
@@ -169,6 +169,16 @@ public class AccessFilter extends ZuulFilter {
 }
 ```
 
+> `AccessFilter` 需要注册成 Bean，比如使用 `@Component` 注解 或在配置类中注册中 Bean。
+
+```java
+//在配置类中注册成 Bean
+@Bean
+public AccessFilter accessFilter() {
+	return new AccessFilter();
+}
+```
+
 + `filterType`：过滤器的类型，决定过滤器在请求的哪个周期中执行。
 	- `pre`：请求被路由之前调用
 	- `route`：请求被路由时调用
@@ -224,3 +234,358 @@ public class QueryParamPreFilter extends ZuulFilter {
 可以看到，在这个栗子中并不是直接在 `run()` 函数中做处理，只是在判断当 "sample" 参数部位 NULL 时，在  RequestContext 中增加 SERVICE_ID_KEY，在 `shouldFilter()` 函数中决定是否进行路由。
 
 更多的路由讲解可以查看 [官网 Zuul](https://cloud.spring.io/spring-cloud-netflix/multi/multi__router_and_filter_zuul.html) 说明文档
+
+## 路由异常处理与优化
+
+前面说了，在 `Zuul` 中默认有四种过滤器，这四种过滤器涵盖了整个路由的生命周期。如图：
+
+![zuul-lifecycle](images/zuul-lifecycle.png)
+
+从图中可以看出，当玩不HTTP请求到达API网关时，首先会进入第一个阶段 `PRE` ，在这里他会被 `pre` 过滤器进行处理，在类型过滤器主要目的是在进行请求路由之前做一些前置加工，比如：**请求的检验**。在完成 `pre` 类型过滤器处理后，请求路由进入第二阶段 `ROUT`，也就是之前说的路由请求转发阶段，请求会被 `rout` 类型过滤器处理。这里具体处理内容就是将外部请求转发到具体服务实例上去的过程，当服务实例将请求返回后该阶段才算是完成。接着就会进入 `POST` 阶段，该阶段在处理的时候不仅可以获取请求信息还能获取到服务实例的返回信息。所以，在 `post` 类型过滤器中我们可以对处理结果进一步加工处理和转换工作。至于 `ERROR` 过滤器，这是一个特殊的过滤器阶段，因为在之前的三个过滤器中只要发生异常都会进入该阶段，该阶段主要是请求路由错误处理阶段。
+
+在 Spring Cloud Zuul 中，在 HTTP 请求声明周期的各个阶段默认实现了一批核心过滤器，在 API 网关服务启动时会被自动加载和启动。可以看下 `org.springframework.cloud.netflix.zuul.filters` 包下三个不同声明周期的过滤器。
+
+![zuul-filter](images/zuul-filter.png)
+
+源码对应内容如下：
+
+|请求周期	| 顺序|	过滤器	|功能	|
+|:---------:|:-----:|:-----:|:-----:|
+|pre	|	|	|	|
+|	|-3	|ServletDetectionFilter| 标记处理 Servlet 类型|
+|	|-2	|Servlet30WrapperFilter| 包装 HttpServletRequest 请求|
+|	|-1	|FormBodyWrapperFilter|包装请求体|
+|	|1	|DebugFilter| 标记调试标识|
+|	|5|PreDecorationFilter|处理请求上下文供后续使用|
+|rout|	|	|	|
+| |10	|RibbonRoutingFilter	| serviceId 请求转发	|
+| |100	|SimpleHostRoutingFilter	| URL 请求转发	|
+| |500	|SendForwardFilter	|forward 请求转发	|
+|post	|	|	|	|
+||0	|SendErrorFilter	|处理有错误的请求相应	|
+||1000	|SendResponseFilter	| 处理正常处理的请求相应	|
+
+**关于异常处理**
+
+笔者将之前定义的 `AccessFilter` 进行注释，并拷贝一份类型为 `TrowExceptionPreFilter` , 在 `run()` 函数处理时进行抛出异常，如下：
+
+```java
+@Component
+public class TrowExceptionPreFilter extends ZuulFilter {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(TrowExceptionPreFilter.class);
+
+	@Override
+	public String filterType() {
+		return "pre";
+	}
+
+	@Override
+	public int filterOrder() {
+		return 0;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() throws ZuulException {
+		LOGGER.info("This is a pre filter, it will throw a RuntimeException");
+		doSomething();
+		return null;
+	}
+
+	private void doSomething() {
+		throw new RuntimeException("Exist some errors...");
+	}
+}
+```
+
+> 直接在类上增加 `@Component` 让Spring能够创建该过滤器实例，或者像注册 `AccessFilter` 一样使用 `@Bean` 也是一样的。
+
+现在重启服务，访问 `http://localhost:5555/api-b/feign-consumer2` 就会抛出如下异常，并且控制台也会有相应的异常日志输出。
+
+```json
+{
+    "timestamp": "2018-07-15T03:00:04.594+0000",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "pre:TrowExceptionPreFilter"
+}
+```
+
+> 这里使用的是 POSTMan 工具，在页面会出现相应的异常信息。
+
+当然，我们也可以重新一个 `ErrorFilter` 错误路由异常处理类，如下：
+
+```java
+@Component
+public class ErrorFilter extends ZuulFilter {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(ErrorFilter.class);
+
+	@Override
+	public String filterType() {
+		return "error";
+	}
+
+	@Override
+	public int filterOrder() {
+		return 10;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() throws ZuulException {
+		RequestContext context = RequestContext.getCurrentContext();
+		Throwable throwable = context.getThrowable();
+		LOGGER.error("this is a ErrorFilter{}", throwable.getCause().getMessage());
+		return null;
+	}
+}
+```
+
+这样，当抛出异常时我们就可以统一在该类中进行处理。不过全部在该类中进行处理就没有缺陷？虽然在 `PRE` 、`POST`、 `ROUT` 三个阶段抛出异常后都会进入该类，但是也是有缺陷的，先来看下 `com.netflix.zuul.http` 包下的 `ZuulServlet` 类。其中有这段代码
+
+```java
+try {
+    preRoute();
+} catch (ZuulException e) {
+    error(e);
+    postRoute();
+   return;
+}
+try {
+    route();
+} catch (ZuulException e) {
+    error(e);
+    postRoute();
+    return;
+}
+try {
+    postRoute();
+} catch (ZuulException e) {
+    error(e);
+    return;
+}
+```
+
+可以看到，在 `PRE` 、`ROUT` 阶段出现错误后进行 `ERROR` 处理后会再次进入 `POST` 阶段，唯有 `POST` 阶段在经过 `ERROR` 处理后就没有然后了。所以这就是之前说的不足的根源。而在三个阶段抛出异常后都会被 `SendErrorFilter` 类进行消费处理。那我们就可以根据这点进行处理。
+
+现在，我们自定义一个 `ErrorExtFilter ` 类用于继承 `SendErrorFilter` 类，并重写出 `run()` 函数以外的方法，在 `shouldFilter()` 函数中，我们只处理有 `POST` 阶段抛出的异常。
+
+```java
+@Component
+public class ErrorExtFilter extends SendErrorFilter {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(ErrorExtFilter.class);
+
+	@Override
+	public String filterType() {
+		//error
+		return super.filterType();
+	}
+
+	/**
+	 * 该值要大于 `ErrorFilter` 类定义的值
+	 */
+	@Override
+	public int filterOrder() {
+		return 30;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		//TODO 判断：仅处理来自 POST 阶段引起的异常
+		return true;
+	}
+}
+
+```
+
+那先在要怎么判断过滤器所处的阶段呢？现在来看下 `com.netflix.zuul` 包下的 `FilterProcessor` 类。其中有集合核心方法如下：
+
+- `getInstance()` 获取当前处理器的实例
+- `setProcessor(FilterProcessor processor)` 设置处理器实例，可以用此方法设置自定义的实例
+- `processZuulFilter(ZuulFilter filter)` 定义了用来执行 filter 的具体逻辑，包括对请求上下文的设置，判断是否应该执行，执行时一些异常的处理等
+- `getFiltersByType(String filterType)` 根据传入的 filterType 获取 API 网关中对应类型的过滤器，并根据这些过滤器的 filterOrder 从小到大排序，组织成一个列表返回
+- `runFilters(String sType)` 根据传入的 filterType 来调用  `getFiltersByType(String filterType)` 获取排序后的过滤器列表，然后轮询这些过滤器，并调用 `processZuulFilter(ZuulFilter filter)` 来依次执行他们
+- `preRoute()`调用 `runFilters("pre")` 来执行pre 类型的过滤器
+- `route()` 调用 `runFilters("route")` 来执行 route 类型过滤器
+- `postRoute()` 调用 `runFilters("post")` 来执行 post 类型过滤器
+- `error()` 调用 ` runFilters("error")` 来执行 error 类型过滤器
+
+现在就可以直接扩展 `processZuulFilter(ZuulFilter filter)`，通过过滤器执行时抛出异常时来进行捕获它，比如：
+
+```xml
+public class ExtFilterProcessor extends FilterProcessor {
+
+	@Override
+	public Object processZuulFilter(ZuulFilter filter) throws ZuulException {
+		try {
+			return super.processZuulFilter(filter);
+		} catch (ZuulException ze) {
+			RequestContext context = RequestContext.getCurrentContext();
+			context.set("FAILED_FILTER", filter);
+			throw ze;
+		}
+	}
+}
+```
+
+创建一个 `ExtFilterProcessor` 类，继承 `FilterProcessor` 并重写 `processZuulFilter(ZuulFilter filter)` 方法，该方法内容很简单，唯一做的操作就是在外出增加了 `try catch` 语句块，当抛出异常
+是向请求上下文中增加 `FAILED_FILTER` 属性，现在就可以继续完善之前定义的 `ErrorExtFilter` 类中 `shouldFilter()` 函数的操作：
+
+```java
+@Component
+public class ErrorExtFilter extends SendErrorFilter {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(ErrorExtFilter.class);
+
+	@Override
+	public String filterType() {
+		return super.filterType();
+	}
+
+	/**
+	 * 该值要大于 `ErrorFilter` 类定义的值
+	 */
+	@Override
+	public int filterOrder() {
+		return 30;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		RequestContext context = RequestContext.getCurrentContext();
+		ZuulFilter zuulFilter = (ZuulFilter) context.get("FAILED_FILTER");
+		LOGGER.info("THE FILTER TYPE IS: {}", zuulFilter.filterType());
+
+		return (zuulFilter != null && "post".equals(zuulFilter.filterType()));
+	}
+}
+```
+
+在函数中通过在上下文中设置的 `FAILED_FILTER` 参数获取 `ZuulFilter` 对象，判断该过滤器是否为 `POST` 阶段过滤器，当为 `POST` 阶段时返回 TRUE。到现在还需要一步操作，就是在启动类中加 `FilterProcessor.setProcessor(new ExtFilterProcessor());` 方法来启动自定义的核心处理器以完成我们优化的目标。
+```java
+@EnableZuulProxy
+@SpringCloudApplication
+public class SpringcloudZuulApplication {
+
+	public static void main(String[] args) {
+		FilterProcessor.setProcessor(new ExtFilterProcessor());
+		new SpringApplicationBuilder(SpringcloudZuulApplication.class).web(true).run(args);
+	}
+}
+```
+
+现在重启服务 POST Filter测试抛出异常阶段，就会发现异常会抛出两遍。
+
+----
+
+# 关于自定义异常返回信息
+
+在实现了对自定义过滤器中异常处理后，在实际应用中，返回的异常信息往往默认的异常信息输出不符合系统设计的相应格式，那我们就需要对信息进行定制。
+
+最简单粗暴的方法就是编写一个自定义的 `post` 过滤器来组织错误结果，可以完全参考 `SendErrorFilter` 实现，然后直接组织请求相应结果而不是 forward 到 `/error ` 端点，只是需要注意的是，使用这种方法替代 `SendErrorFilter` 还需要禁用 `SendErrorFilter` 过滤器。
+
+如果不使用上面的那种方法我们可以直接编织异常信息，`/error ` 端点的实现来至 `org.springframework.boot.autoconfigure.web.servlet.error` 包下的 `BasicErrorController` 类，如下：
+
+```java
+@Controller
+@RequestMapping("${server.error.path:${error.path:/error}}")
+public class BasicErrorController extends AbstractErrorController {
+
+	@RequestMapping
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+		Map<String, Object> body = getErrorAttributes(request,
+				isIncludeStackTrace(request, MediaType.ALL));
+		HttpStatus status = getStatus(request);
+		return new ResponseEntity<>(body, status);
+	}
+	// ...
+}
+```
+
+通过调用 `getErrorAttributes` 方法来根据请求参数组织错误信息的返回结果，而该方法来至 `org.springframework.boot.web.servlet.error` 包下的 `DefaultErrorAttributes` 类，如下：
+
+```java
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class DefaultErrorAttributes
+		implements ErrorAttributes, HandlerExceptionResolver, Ordered {
+		
+	@Override
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest,
+			boolean includeStackTrace) {
+		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+		errorAttributes.put("timestamp", new Date());
+		addStatus(errorAttributes, webRequest);
+		addErrorDetails(errorAttributes, webRequest, includeStackTrace);
+		addPath(errorAttributes, webRequest);
+		return errorAttributes;
+	}
+	// ...
+}
+```
+
+所以，如果需要编织错误信息只需要重写 `getErrorAttributes(WebRequest webRequest,boolean includeStackTrace)` 方法，在方法中进行处理即可，比如定义一个类 `ErrorAttributes` 继承 `DefaultErrorAttributes` 类，重写方法 `getErrorAttributes` ：
+
+```java
+@Component
+public class ErrorAttributes extends DefaultErrorAttributes {
+
+	@Override
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+		Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
+		return errorAttributes;
+	}
+}
+```
+
+这里只是进行了一次重新，如果需要操作比如删除一次信息 `message` ：`errorAttributes.remove("message");`
+
+原输出异常信息如下：
+
+```json
+{
+    "timestamp": "2018-07-15T06:41:29.992+0000",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "post:TrowExceptionPostFilter"
+}
+```
+
+删除后异常信息如下：
+
+```json
+{
+    "timestamp": "2018-07-15T06:51:39.565+0000",
+    "status": 500,
+    "error": "Internal Server Error"
+}
+```
+
+## 禁用过滤器
+
+不论是核心过滤器还是自定义的过滤器，只要 API 网关应用中为他们创建实例，默认情况下，他们都是启动状态的。那么如果有些过滤器我们不想使用了该如何禁止呢？直接在 `shouldFilter()` 函数中返回 false？这样改过滤器的请求将都不会被执行，基本实现了对过滤器的禁用。但这缺乏了灵活性。
+
+实际上， Zuul 中特别提供了一个参数来禁用指定的过滤器，如下：
+
+```
+zuul.<SimpleClassName>.<fileType>.disable = true
+```
+
+其中， SimpleClassName 代表过滤器的类名，比如本工程开始创建的 `AccessFilter` 过滤器，`fileTyp>` 代表过滤器的类型，比如 `AccessFilter` 定义的过滤器类型为 `pre` ，如果需要禁用该过滤器只需要在配置文件中配置如下即可：
+
+```
+zuul.AccessFilter.pre.disable = true
+```
+
+该参数配置除了可以对自定义的过滤器禁用外，很多时候可以用来禁用 Spring Cloud Zuul 中默认定义的核心过滤器！

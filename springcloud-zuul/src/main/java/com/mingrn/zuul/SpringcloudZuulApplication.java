@@ -1,6 +1,8 @@
 package com.mingrn.zuul;
 
 import com.mingrn.zuul.web.AccessFilter;
+import com.mingrn.zuul.web.ExtFilterProcessor;
+import com.netflix.zuul.FilterProcessor;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
@@ -12,10 +14,10 @@ import org.springframework.context.annotation.Bean;
 @SpringCloudApplication
 public class SpringcloudZuulApplication {
 
-	@Bean
+	/*@Bean
 	public AccessFilter accessFilter() {
 		return new AccessFilter();
-	}
+	}*/
 
 	/**
 	 * 将路由规则进行模式转换,比如服务实例为 userService-v1 则被映射的路径为 v1/userService
@@ -26,6 +28,7 @@ public class SpringcloudZuulApplication {
 	}*/
 
 	public static void main(String[] args) {
+		FilterProcessor.setProcessor(new ExtFilterProcessor());
 		new SpringApplicationBuilder(SpringcloudZuulApplication.class).web(true).run(args);
 	}
 }
