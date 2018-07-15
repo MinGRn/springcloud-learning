@@ -163,4 +163,4 @@ public class HystrixConfig {
 启动成功后会在注册中心看到两个服务提供者、两个服务消费者实例！
 
 接着启动 [springcloud-turbine](../springcloud-turbine) 集群监控 实例，刷新注册中心，后看到该实例后
-访问 Hystrix Dashboard，并开启对 ``http://localhost:8989/turbine.stream` 的监控，能看到与单体服务监控类似的页面。
+访问 Hystrix Dashboard，并开启对 `http://localhost:8989/turbine.stream` 的监控，能看到与单体服务监控类似的页面。
