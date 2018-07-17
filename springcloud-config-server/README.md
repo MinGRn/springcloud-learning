@@ -72,7 +72,7 @@ spring.cloud.config.server.git.password=******
 > - `spring.cloud.config.server.git.password`：git仓库登录密码
 
 在配置文件中 `spring.cloud.config.server.git.search-paths` 所指的相对路径是基于仓库位置，比如这里的仓库名称为 springcloud-config-server，
-而配置文件所处的位置在 `springcloud-config-server/spring-cloud-in-action/config-repo` 目录下，那么相对路径为 `/spring-cloud-in-action/config-repo`
+而配置文件所处的位置在 `springcloud-config-server/spring-cloud-in-action/config-repo` 目录下，那么相对路径为 `/spring-cloud-in-action/config-repo`,支持多个相对路径,多个相对路径之间需要中逗号做分隔！
 
 如图：
 
