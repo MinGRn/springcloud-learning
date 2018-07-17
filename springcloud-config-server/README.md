@@ -248,7 +248,7 @@ spring.cloud.config.server.git.search-paths=spring-cloud-in-action/config-repo
 
 **本地仓库配置与采坑**
 
-在配置本地仓库是，使用的参数如下：
+在配置本地仓库时，使用的参数如下：
 
 ```properties
 spring.cloud.config.server.git.uri = file:///${user.home}/AppData/Local/Temp/config-repo-5452474400930930259
@@ -256,5 +256,5 @@ spring.cloud.config.server.git.uri = file:///${user.home}/AppData/Local/Temp/con
 ```
 
 在 windows 下 `file:///` 这里必须跟三个斜杠，Linux则双斜杠即可。另外，`${user.home}` 环境变量指的是当前用户环境目录，如果你不知道在哪，那就直接在 CMD 终端命令
-中输入：`start.` 指令就会直接弹出当前用户目录，另外路径什么的都知道好以后并没有完事，你需要确定你所指定的本地仓库是否有指向远程仓库的信息，即 `.git` 目录。你使用远程
+中输入：`start.` 指令就会直接弹出当前用户目录，另外路径什么的都设置好以后并没有完事，你需要确定你所指定的本地仓库是否有指向远程仓库的信息，即 `.git` 目录。你使用远程
 仓库时，每次克隆本地都会有 .git 目录。这里要注意下！
