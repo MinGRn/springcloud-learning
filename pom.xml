@@ -41,5 +41,8 @@
 
 		<!--Zuul网关-->
 		<module>springcloud-zuul</module>
+
+		<!--Config Server 配置中心-->
+		<module>springcloud-config-server</module>
 	</modules>
 </project>
