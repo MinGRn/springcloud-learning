@@ -42,7 +42,8 @@
 		<!--Zuul网关-->
 		<module>springcloud-zuul</module>
 
-		<!--Config Server 配置中心-->
+		<!--Config 分布式配置中心服务端与客户端-->
 		<module>springcloud-config-server</module>
+		<module>springcloud-config-client</module>
 	</modules>
 </project>

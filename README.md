@@ -31,3 +31,7 @@
 
 + Zuul API 网关
   - springcloud-zuul
+  
++ Config 分布式配置中心服务端与客户端
+  - springcloud-config-server
+  - springcloud-config-client
