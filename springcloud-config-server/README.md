@@ -1,4 +1,4 @@
-# Spring Cloud Config
+# Spring Cloud Config Server
 
 在分布式系统中，每一个功能模块都能拆分成一个独立的服务，一次请求的完成，可能会调用很多个服务协
 调来完成，为了方便服务配置文件统一管理，更易于部署、维护，所以就需要分布式配置中心组件 一一 spring cloud config。
