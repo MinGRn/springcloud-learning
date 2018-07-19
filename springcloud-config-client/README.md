@@ -94,13 +94,12 @@ management.endpoints.web.exposure.include=*
 
 >**注意：** 为了测试需要，笔者在之前的配置中心 config-server 中同样增加了该依赖和配置。
 
-在启动服务之前需要说一点，在构建工程是由于只勾线了 `config client`，所以在 pom 中并没有引入 `spring-boot-starter-web` 依赖，这里需要
-在依赖中引入该依赖，不然启动时会报异常：
+在启动服务之前需要说一点，在构建工程时由于只勾线了 `config client`，所以在 pom 中并没有引入 `spring-boot-starter-web` 依赖，这里需要在依赖中引入该依赖，不然启动时会报异常：
 
 ![no-springboot-web-pom-exception.png](images/no-springboot-web-pom-exception.png)
 
-现在，一切准备就绪，就来启动服务(在启动该客户端服务之前先启动config配置中心[springcloud-config-server](../springcloud-config-server))。
-在启动时看下控制台输出获取配置中心配置的日志信息：
+现在，一切准备就绪，就来启动客户端服务(在启动该客户端服务之前先启动config配置中心[springcloud-config-server](../springcloud-config-server))。
+在启动时在控制台会输出获取配置中心配置的日志信息：
 
 ```log
 Fetching config from server at : http://127.0.0.1:7001
