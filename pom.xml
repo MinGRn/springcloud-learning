@@ -39,8 +39,9 @@
 		<!--Feign 负载均衡与容错保护-->
 		<module>springcloud-feign-consumer</module>
 
-		<!--Zuul网关-->
+		<!--Zuul网关与动态更新路由-->
 		<module>springcloud-zuul</module>
+		<module>springcloud-zuul-dynamic</module>
 
 		<!--Config 分布式配置中心服务端与客户端-->
 		<module>springcloud-config-server</module>
