@@ -7,31 +7,35 @@
 本仓库在提交后在 GitHub 中的目录会有些错乱，下面将阅读顺序进行一个罗列：
 
 + 单节点服务注册中心
-  - springcloud-eureka
-  - springcloud-eureka-service
+  - [springcloud-eureka](springcloud-eureka)
+  - [springcloud-eureka-service](springcloud-eureka-service)
 
 + 高可用服务注册中心(多节点)
-  - springcloud-eureka-peer
-  - springcloud-eureka-peer-service
+  - [springcloud-eureka-peer](springcloud-eureka-peer)
+  - [springcloud-eureka-peer-service](springcloud-eureka-peer-service)
 
 + 服务发现与消费者
-  - springcloud-ribbon-consumer
+  - [springcloud-ribbon-consumer](springcloud-ribbon-consumer)
 
 + Hystrix 容错保护
-  - springcloud-ribbon-hystrix-consumer
+  - [springcloud-ribbon-hystrix-consumer](springcloud-ribbon-hystrix-consumer)
 
 + Hystrix Dashboard仪表盘
-  - springcloud-hystrix-dashboard
+  - [springcloud-hystrix-dashboard](springcloud-hystrix-dashboard)
 
 + Turbine 集群监控
-  - springcloud-turbine
+  - [springcloud-turbine](springcloud-turbine)
 
 + Feign 负载均衡与容错保护
-  - springcloud-feign-consumer
+  - [springcloud-feign-consumer](springcloud-feign-consumer)
 
 + Zuul API 网关
-  - springcloud-zuul
+  - [springcloud-zuul](springcloud-zuul)
   
 + Config 分布式配置中心服务端与客户端
-  - springcloud-config-server
-  - springcloud-config-client
+  - [springcloud-config-server](springcloud-config-server)
+  - [springcloud-config-client](springcloud-config-client)
+  
++ Config 分布式配置中心服务端与客户端高可用
+  - [springcloud-config-server-eureka](springcloud-config-server-eureka)
+  - [springcloud-config-client-eureka](springcloud-config-client-eureka)

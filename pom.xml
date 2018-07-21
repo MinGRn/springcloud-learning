@@ -45,5 +45,9 @@
 		<!--Config 分布式配置中心服务端与客户端-->
 		<module>springcloud-config-server</module>
 		<module>springcloud-config-client</module>
+
+		<!--Config 分布式配置中心高可用配置-->
+		<module>springcloud-config-server-eureka</module>
+		<module>springcloud-config-client-eureka</module>
 	</modules>
 </project>

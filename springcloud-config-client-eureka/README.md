@@ -1,0 +1,1 @@
+本节内容请阅读 [springcloud-config-server-eureka](../springcloud-config-server-eureka),这两个工程是一体的！
