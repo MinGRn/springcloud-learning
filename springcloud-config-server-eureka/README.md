@@ -156,7 +156,7 @@ spring.cloud.config.fail-fast=true
 
 ![fail-fast-true-retry-fail.png](images/fail-fast-true-retry-fail.png)
 
-在启动客户端是，进行尝试连接 Config Server，当连接失败时进行重新连接，知道第六次才抛出异常信息！说明重试机制启动了作用！这里默认情况下重试机制为六次。如果对重试机制不满意还可以通过以下几个属性进行配置！
+在启动客户端是，进行尝试连接 Config Server，当连接失败时进行重新连接，直到第六次才抛出异常信息！说明重试机制启动了作用！这里默认情况下重试机制为六次。如果对重试机制不满意还可以通过以下几个属性进行配置！
 
 ```properties
 spring.cloud.config.retry.max-attempts=6
