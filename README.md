@@ -29,9 +29,10 @@
 + Feign 负载均衡与容错保护
   - [springcloud-feign-consumer](springcloud-feign-consumer)
 
-+ Zuul API 网关与动态更新路由
++ Zuul API 网关、动态更新路由与动态过滤器
   - [springcloud-zuul](springcloud-zuul)
   - [springcloud-zuul-api-gateway-dynamic](springcloud-zuul-api-gateway-dynamic)
+  - [springcloud-zuul-filter-dynamic](springcloud-zuul-filter-dynamic)
   
 + Config 分布式配置中心服务端与客户端
   - [springcloud-config-server](springcloud-config-server)
