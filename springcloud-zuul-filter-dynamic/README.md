@@ -237,4 +237,4 @@ class PostFilter extends ZuulFilter {
 
 ![groovy-exception.png](images/groovy-exception.png)
 
-因为笔者没撸过 Groovy，后来在利用 Idea 写时发现貌似不需要 `;`。虽然 Groovy 与 Java 有许多相似之处，不过还是有点差别的，需要注意一下！最后理由 ide 工具，不要直接在 vim 中编写！
+因为笔者没撸过 Groovy，后来在利用 Idea 写时发现貌似不需要 `;`。虽然 Groovy 与 Java 有许多相似之处，不过还是有点差别的，需要注意一下！最好利用 IDE 工具，不要直接在 vim 中编写！
