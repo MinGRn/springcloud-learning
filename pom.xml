@@ -41,7 +41,7 @@
 
 		<!--Zuul网关与动态更新路由-->
 		<module>springcloud-zuul</module>
-		<module>springcloud-zuul-dynamic</module>
+		<module>springcloud-zuul-api-gateway-dynamic</module>
 
 		<!--Config 分布式配置中心服务端与客户端-->
 		<module>springcloud-config-server</module>
