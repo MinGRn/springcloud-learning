@@ -51,5 +51,10 @@
 		<!--Config 分布式配置中心高可用配置-->
 		<module>springcloud-config-server-eureka</module>
 		<module>springcloud-config-client-eureka</module>
+
+		<!--SpringCloud Bus 消息中间件 rabbitMQ-->
+		<module>springcloud-rabbitmq</module>
+		<module>springcloud-config-server-eureka-bus</module>
+		<module>springcloud-config-client-eureka-bus</module>
 	</modules>
 </project>

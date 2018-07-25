@@ -41,3 +41,8 @@
 + Config 分布式配置中心服务端与客户端高可用
   - [springcloud-config-server-eureka](springcloud-config-server-eureka)
   - [springcloud-config-client-eureka](springcloud-config-client-eureka)
+  
+* Bus 消息中间件 rabbitMQ、ActiveMQ
+  - [springcloud-rabbitmq](springcloud-rabbitmq)
+  - [springcloud-config-server-eureka-bus](springcloud-config-server-eureka-bus)
+  - [springcloud-config-client-eureka-bus](springcloud-config-client-eureka-bus)
