@@ -589,3 +589,7 @@ zuul.AccessFilter.pre.disable = true
 ```
 
 该参数配置除了可以对自定义的过滤器禁用外，很多时候可以用来禁用 Spring Cloud Zuul 中默认定义的核心过滤器！
+
+---
+
+题外话(补充)：关于路由算法在 `extend` 包下有五个 DEMO，分别是：**轮询法**、**随机法**、**源地址哈希法**、**加权轮询法**、**加权随机法**。原文地址:[CSDN](https://blog.csdn.net/YEN_CSDN/article/details/55513549)
