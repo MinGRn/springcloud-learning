@@ -1,0 +1,1 @@
+具体请看 [springcloud-rabbitmq](../springcloud-rabbitmq) 工程
