@@ -371,12 +371,14 @@ spring.rabbitmq.password=123456
 
 现在，修改配置中心 from 属性值为 `git-dev-2.0`，并请求 `http://localhost:7001/actuator/refresh` 或 `http://localhost:7002/actuator/refresh` 或 `http://localhost:7003/actuator/refresh`。在此请求两个客户端信息就会发现两个客户端返回的数据是 `git-dev-2.0`。成功刷新配置信息！
 
+这里有一点需要注意，如果发现配置属性值并没有被更新但是在请求刷新节点时在控制台输出了刷新信息，需要看下是否在需要刷新配置属性的类上增加了 `@RefreshScope` 注解。只要是需要动态更新的配置都需要在类上增加该注解！
+
 > **注意：** 请求 Server 端点的 `/actuator/refresh` 是刷新所有客户端的配置信息，而请求 Client 端点的 `/actuator/refresh` 则是刷新这个实例服务的所有实例配置信息。而，如果只想刷新某个服务的具体实例，比如：Config：7002 实例，则只需要请求 `http://localhost:7001/actuator/bus-refresh/config:7002` 即可！
 
 只看代码可有有点不好理解，现在来看下图示：
 
-Config Client 请求消息总线：
+Config Client 请求消息总线示意图：
 ![rabbitmq-client-pic.png](images/rabbitmq-client-pic.png)
 
-Config Server 请求消息总线：
+Config Server 请求消息总线示意图：
 ![rabbitmq-server-pic.png](images/rabbitmq-server-pic.png)
