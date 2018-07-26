@@ -380,14 +380,14 @@ spring.rabbitmq.password=123456
 
 ![rabbitmq-client-pic.png](images/rabbitmq-client-pic.png)
 
-当我们请求客户端的刷新端点时，客户端就像消息总线发送（生产）一条消息到消息总线上。消息总线在收到该消息之后就会分发消息至同一服务的不同实例，客户端收到消息后并消费消息。各个客户端都会像服务端请求配置信息！
+当我们请求客户端的刷新端点时，客户端就向消息总线发送（生产）一条消息到消息总线上。消息总线在收到该消息之后就会分发消息至同一服务的不同实例，客户端收到消息后并消费消息。各个客户端都会向服务端请求配置信息！
 
 现在，再来看下当请求服务端时的示意图：
 
 ![rabbitmq-server-pic.png](images/rabbitmq-server-pic.png)
 
-当请求服务端的刷新端点是，同样的会向消息总线发送消息。与客户端不同的是，这次的消息总线是向所有的客户端发送消息（不同服务的不同实例）。接着所有的客户端实例都会消费这个消息，想请求刷新配置端点信息。
+当请求服务端的刷新端点是，同样的会向消息总线发送消息。与客户端不同的是，这次的消息总线是向所有的客户端发送消息（不同服务的不同实例）。接着所有的客户端实例都会消费这个消息，请求刷新配置端点信息。
 
 可以看到，请求服务端与请求客户端的刷新端点之间的唯一区别就是：请求客户端是刷新同一服务的不同实例配置信息。而请求服务端则是刷新不同服务的所有实例配置信息！这是唯一的区别！
 
-某些场景下（例如灰度发布），我们可能只想刷新部分微服务的配置，此时可通过 `/actuator/bus-refresh/{destination}` 端点的 destination 参数来定位要刷新的应用程序。例如：`/actuator/bus-refresh/config:7002`，这样消息总线上的微服务实例就会根据 destination 参数的值来判断是否需要要刷新。其中，`/actuator/bus-refresh/config:7002` 指的是各个微服务的 ApplicationContext ID，也可以说是 `${spring.application.name}:${server.port}`。destination 参数也可以用来定位特定的微服务。例如：`/actuator/bus-refresh/config:**`，这样就可以触发 customers 微服务所有实例的配置刷新。
+某些场景下（例如灰度发布），我们可能只想刷新部分微服务的配置，此时可通过 `/actuator/bus-refresh/{destination}` 端点的 destination 参数来定位要刷新的应用程序。例如：`/actuator/bus-refresh/config:7002`，这样消息总线上的微服务实例就会根据 destination 参数的值来判断是否需要要刷新。其中，`/actuator/bus-refresh/config:7002` 指的是各个微服务的 ApplicationContext ID，也可以说是 `${spring.application.name}:${server.port}`。destination 参数也可以用来定位特定的微服务。例如：`/actuator/bus-refresh/config:**`，这样就可以触发 config 微服务所有实例的配置刷新。
