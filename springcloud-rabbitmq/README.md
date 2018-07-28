@@ -391,3 +391,158 @@ spring.rabbitmq.password=123456
 可以看到，请求服务端与请求客户端的刷新端点之间的唯一区别就是：请求客户端是刷新同一服务的不同实例配置信息。而请求服务端则是刷新不同服务的所有实例配置信息！这是唯一的区别！
 
 某些场景下（例如灰度发布），我们可能只想刷新部分微服务的配置，此时可通过 `/actuator/bus-refresh/{destination}` 端点的 destination 参数来定位要刷新的应用程序。例如：`/actuator/bus-refresh/config:7002`，这样消息总线上的微服务实例就会根据 destination 参数的值来判断是否需要要刷新。其中，`/actuator/bus-refresh/config:7002` 指的是各个微服务的 ApplicationContext ID，也可以说是 `${spring.application.name}:${server.port}`。destination 参数也可以用来定位特定的微服务。例如：`/actuator/bus-refresh/config:**`，这样就可以触发 config 微服务所有实例的配置刷新。
+
+# Kafka 实现消息总线
+
+现在对 RabbitMQ 已经有了基本的了解，现在看下使用 Kafka 实现消息总线。在实践之前同样的还是先安装 Kafka 环境！
+
+首先要进入 Apache 官网在zookeeper下载页面 [zookeeper](https://www.apache.org/dyn/closer.cgi/zookeeper/) 下载。
+
+![zookeeper-download.png](images/zookeeper-download.png)
+
+下载完成后进行解压，配置环境变量
+
+![zookeeper-enviro-path.png](images/zookeeper-enviro-path.png)
+
+在命令终端中输入 `zkServer` 能看到如下信息，即表示已经 OK 了
+
+![zkServer.png](images/zkServer.png)
+
+在来下载，同样的进入 [Kafka 下载页面](http://kafka.apache.org/downloads) 下载
+
+![kafka-download.png](images/kafka-download.png)
+
+![kafka-enviro-path.png](images/kafka-enviro-path.png)
+
+这里对 kafka 的安装目录下的各个文件不做讲解，直接在 bin 的同级目录中打开控制台 输入命令: `.\bin\windows\kafka-server-start.bat .\config\server.properties` 启动服务
+
+在启动时会打印会打印许多配置信息！到此已经基本完成。现在我们可以来创建一个生产者和一个消费者。在bin目录下（或bin的windows文件夹下）打开终端控制台创建一个 Topic 为 test 的生产者：`kafka-console-producer.bat --broker-list localhost:9092 --topic test`，
+在打开一个控制台创建一个消费 test 的消费者：` kafka-console-consumer.bat --zookeeper localhost:2181 --topic test --from-beginning`
+
+>**注意：** 这里消费者的 zookeeper 端口是 2181 原因是zookeeper 的启动端口配置的是 2181，可以在 zookeeper 的配置文件中自行更改。
+
+可以测试一下在生成者中输入消息是，在消费者的控制台中能看到消费的信息！
+
+![kafka-pro-con.png](images/kafka-pro-con.png)
+
+这里对 Kafka 的概念讲一下：
+
+- Broker：Kafka 集群包含一个或多个服务器，这些服务器被称为 Broker。
+- Topic：逻辑上同 RabbitMQ 的 Queue 队列相似，每条发布到 Broker 集群的消息都必须有一个 Topic。
+- Partition：Partition 是物理概念上的分区，为了提供系统的吞吐率，在物理上每个 Topic 会分成一个或多个 Partition，每个Partition对应一个文件夹（存储对应分区的消息内容和索引文件）
+- Producer：消息生产者，负责生产消息并发送到 Broker。
+- Consumer：消息消费者，向 Kafka 读取消息并处理的客户端。
+- Consumer Group：每个 Consumer 属于一个特定的组（可为每个 Consumer 指定属于一个组，若不指定则属于默认组），组可以用来实现一条消息被组内多个成员消费等功能。
+
+**整个 Spring Cloud Bus**
+
+这里直接在 [springcloud-config-server-eureka-bus](../springcloud-config-server-eureka-bus) 和 [springcloud-config-client-eureka-bus](../springcloud-config-client-eureka-bus) 工程中进行修改即可！将 pom 依赖中的 `spring-cloud-starter-bus-amqp` 依赖注释掉
+然后将 `spring-cloud-starter-bus-kafka` 依赖引入即可！
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bus-kafka</artifactId>
+</dependency>
+```
+
+启动服务注册中心 [springcloud-eureka](../springcloud-eureka) 并将启动两个工程，其中客户端启动两个实例！
+
+在控制台中能可以看到，服务连接到 Kafka 中，并使用了名为 springCloudBus 的 Topic！
+
+![console-info.png](images/console-info.png)
+
+在命令终端输入 `kafka-topics.bat --list --zookeeper localhost:2181` 看到 Topic 集合中确实多了一个名为 springCloudBus 的 Topic：
+
+![topic-list.png](images/topic-list.png)
+
+访问 `127.0.0.1:7002/from` 或 `127.0.0.1:7003/from` 可以看到返回的信息是 `git-dev-1.0` ，现在修改配置仓库中的from 属性值 为 git-dev-2.0。访问 `/actuator/bus-refresh` 端点刷新配置，再次访问 `/from` 端点，可以看到返回的信息是 `git-dev-2.0`。说明成功更新！
+
+刷新端点操作与 RabbitMQ 完全一样，这里不做多余解释。只需要在依赖中引入 kafka 依赖即可！
+
+在服务启动时，在控制台中看到创建了一个名为 springCloudBus 的 Topic。当刷新端点时，我们可以在控制台中启动对该 Topic 的监控观察：
+```
+# 在命令终端中输入
+kafka-console-consumer.bat --zookeeper localhost:2181 --topic springCloudBus
+```
+
+访问刷新端点是就会打印如下信息：
+```json
+// http://localhost:7001/actuator/bus-refresh 端点
+[
+    {
+        "destinationService": "**",
+        "id": "a937bbf0-9d9c-498c-9d3f-0412bb5d9302",
+        "originService": "config-server:7001:cb9717cd6cda905cf5c8afe58612059d",
+        "timestamp": 1532746023505,
+        "type": "RefreshRemoteApplicationEvent"
+    },
+    {
+        "ackDestinationService": "**",
+        "ackId": "a937bbf0-9d9c-498c-9d3f-0412bb5d9302",
+        "destinationService": "**",
+        "event": "org.springframework.cloud.bus.event.RefreshRemoteApplicationEvent",
+        "id": "f919728f-c14f-48fd-8ec4-8ee935c8caf5",
+        "originService": "config-server:7001:cb9717cd6cda905cf5c8afe58612059d",
+        "timestamp": 1532746023508,
+        "type": "AckRemoteApplicationEvent"
+    },
+    {
+        "ackDestinationService": "**",
+        "ackId": "a937bbf0-9d9c-498c-9d3f-0412bb5d9302",
+        "destinationService": "**",
+        "event": "org.springframework.cloud.bus.event.RefreshRemoteApplicationEvent",
+        "id": "a4ed3f6a-a0df-46a3-b7b1-356a590bfbb7",
+        "originService": "config:7003:f516c9c40f621d674abd898dbb5339be",
+        "timestamp": 1532746028330,
+        "type": "AckRemoteApplicationEvent"
+    },
+    {
+        "ackDestinationService": "**",
+        "ackId": "a937bbf0-9d9c-498c-9d3f-0412bb5d9302",
+        "destinationService": "**",
+        "event": "org.springframework.cloud.bus.event.RefreshRemoteApplicationEvent",
+        "id": "f728f3ec-cb84-405c-985c-02ee0ea28499",
+        "originService": "config:7002:863a4796937ce3f13dfd500d828ac835",
+        "timestamp": 1532746028841,
+        "type": "AckRemoteApplicationEvent"
+    }
+]
+```
+
+```json
+// http://localhost:7002/actuator/bus-refresh/config:7003 端点
+[
+    {
+        "destinationService": "config:7003:**",
+        "id": "1675a3ec-56c7-4738-85c0-9b03e3f9eb67",
+        "originService": "config:7002:863a4796937ce3f13dfd500d828ac835",
+        "timestamp": 1532746200095,
+        "type": "RefreshRemoteApplicationEvent"
+    },
+    {
+        "ackDestinationService": "config:7003:**",
+        "ackId": "1675a3ec-56c7-4738-85c0-9b03e3f9eb67",
+        "destinationService": "**",
+        "event": "org.springframework.cloud.bus.event.RefreshRemoteApplicationEvent",
+        "id": "ac2037f4-e35c-4ea1-9b54-3110d908e949",
+        "originService": "config:7003:f516c9c40f621d674abd898dbb5339be",
+        "timestamp": 1532746205406,
+        "type": "AckRemoteApplicationEvent"
+    }
+]
+```
+
+下面，来相信说下信息内容：
+
+* `RefreshRemoteApplicationEvent` 和 `AckRemoteApplicationEvent` 共有属性
+  + type：消息的事件类型。
+    - `RefreshRemoteApplicationEvent` 是用来刷新配置的事件
+    - `AckRemoteApplicationEvent` 是相应消息已经正确解释的告知消息事件
+  + timestamp：消息的时间戳。
+  + destinationService：消息的目标服务实例。
+  + id：消息的唯一标识。
+* `AckRemoteApplicationEvent` 特有属性
+  + ackId：Ack 消息对应的消息来源。从上面的信息中可以看到 type 为 `AckRemoteApplicationEvent` 类型的 ackId 对应 type 为 `RefreshRemoteApplicationEvent` 类型的id。
+  + ackDestinationService：ack 消息的目标服务实例。`**` 表示消息总线上的所有所有实例都接收到 ack 消息。`config:7003:**` 则表示只有服务为 Config 端口为 7003 的实例才接受到消息。
+  + event：ack 消息的来源事件。
