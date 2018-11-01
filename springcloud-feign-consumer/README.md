@@ -39,7 +39,7 @@ public interface HelloService {
 }
 ```
 
-> **注意：**这里服务名不区分大小写，所以 hello-service 和 HELLO-SERVICE 都是可以的。
+> **注意：** 这里服务名不区分大小写，所以 hello-service 和 HELLO-SERVICE 都是可以的。
 
 * 创建 `ConsumerController` 来实现对 Feign 客户端的调用。使用 `@Autowired` 或 `Resource` 注解注入上面定义的 HelloService 实例，并在 helloConsumer 方法中发起 /index 接口的调用。
 

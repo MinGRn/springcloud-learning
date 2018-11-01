@@ -3,6 +3,7 @@ package com.mingrn.zuul;
 import com.mingrn.zuul.web.AccessFilter;
 import com.mingrn.zuul.web.ExtFilterProcessor;
 import com.netflix.zuul.FilterProcessor;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
@@ -29,6 +30,6 @@ public class SpringcloudZuulApplication {
 
 	public static void main(String[] args) {
 		FilterProcessor.setProcessor(new ExtFilterProcessor());
-		new SpringApplicationBuilder(SpringcloudZuulApplication.class).web(true).run(args);
+		new SpringApplicationBuilder(SpringcloudZuulApplication.class).web(WebApplicationType.SERVLET).run(args);
 	}
 }
